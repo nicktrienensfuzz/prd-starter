@@ -44,11 +44,11 @@ jobs:
             run: |
                 dotenv
                 
-          - name: copy file
-            uses: canastro/copy-action@0.0.2
-            with:
-              source: "ChatJira/Dockerfile"
-              target: "Dockerfile"
+          # - name: copy file
+          #   uses: canastro/copy-action@0.0.2
+          #   with:
+          #     source: "ChatJira/Dockerfile"
+          #     target: "Dockerfile"
               
           - name: Build Docker container
             run: |
