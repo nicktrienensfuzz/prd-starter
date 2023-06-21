@@ -7,7 +7,6 @@
 import ArgumentParser
 import Foundation
 import Logging
-import Dependencies
 import Hummingbird
 import HummingbirdFoundation
 import HummingbirdAuth
