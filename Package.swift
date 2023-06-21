@@ -33,6 +33,7 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "JSON",package: "JSON"),
                 .product(name: "Hummingbird",package: "hummingbird"),
+                .product(name: "HummingbirdFoundation",package: "hummingbird"),
 //                .product(name: "Tagged",package: "swift-tagged"),
                 .product(name: "Logging",package: "swift-log"),
                 

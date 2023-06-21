@@ -9,7 +9,7 @@ import Foundation
 import Logging
 import Hummingbird
 import HummingbirdFoundation
-import HummingbirdAuth
+//import HummingbirdAuth
 import HummingbirdLambda
 import AWSLambdaEvents
 import AWSLambdaRuntimeCore
