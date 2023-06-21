@@ -57,12 +57,12 @@ jobs:
           - name: Run Docker container, swift build
             working-directory: .
             run: |
-               docker run --rm --volume "$(pwd)/../:/src"  --workdir "/src/" --name my-container-instance my-container swift build --product PRDStarter -c release
+               docker run --rm --volume "$(pwd)/:/src"  --workdir "/src/" --name my-container-instance my-container swift build --product PRDStarter -c release
 
           - name: Run Docker container, swift package
             working-directory: .
             run: |
-               docker run --rm --volume "$(pwd)/../:/src"  --workdir "/src/" --name my-container-instance my-container scripts/package.sh PRDStarter
+               docker run --rm --volume "$(pwd)/:/src"  --workdir "/src/" --name my-container-instance my-container scripts/package.sh PRDStarter
         
           - name: Serverless config setup profile
             working-directory: .
