@@ -71,7 +71,7 @@ extension PRDStarter {
         
         
         app.router.get("form") { request -> HBResponse in
-            return HBResponse(status: .ok, headers: .init([("content-Type", "application/html")]), body: .data("""
+            return HBResponse(status: .ok, headers: .init([("content-Type", "text/html")]), body: .data("""
 <!doctype html>
 <html lang="en">
 

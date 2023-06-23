@@ -11,3 +11,4 @@ DerivedData/
 /ConfluenceReader/.swiftpm
 /ConfluenceReader/.build
 /.swiftpm
+/dev.env
