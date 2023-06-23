@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-log",from: "1.5.2"),
         
 //        .package(url: "https://github.com/hummingbird-project/hummingbird-auth",from: "1.1.0"),
-        .package(url: "https://github.com/hummingbird-project/hummingbird-lambda",from: "1.0.0-rc.3"),
+        .package(url: "https://github.com/nicktrienensfuzz/hummingbird-lambda.git", branch: "main"),
         .package(path: "Dependency"),
         .package(path: "ConfluenceReader"),
     ],
