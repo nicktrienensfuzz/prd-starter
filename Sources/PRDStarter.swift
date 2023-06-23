@@ -8,58 +8,56 @@ import ArgumentParser
 import Foundation
 import Logging
 import Hummingbird
+import HummingbirdCore
 import HummingbirdFoundation
-//import HummingbirdAuth
+
 import HummingbirdLambda
 import AWSLambdaEvents
 import AWSLambdaRuntimeCore
 
 @main
-struct MyHandler: HBLambda {
+struct PRDStarter: HBLambda {
     // define input and output
     typealias Event = APIGatewayRequest
     typealias Output = APIGatewayResponse
-    
+
     init(_ app: HBApplication) {
-        
-//@main
-//struct PRDStarter: AsyncParsableCommand {
-//    @Option(name: .shortAndLong)
-//    var hostname: String = "127.0.0.1"
-//
-//    @Option(name: .shortAndLong)
-//    var port: Int = 8070
-//
-//    mutating func run() async throws {
-//        print("Hello, world!")
-//        let app = HBApplication(configuration: .init(address: .hostname(hostname, port: port)))
         
         app.middleware.add(HBLogRequestsMiddleware(.debug))
         app.decoder = JSONDecoder()
-//
-//        struct BasicAuthenticator: HBAuthenticator {
-//            func authenticate(request: HBRequest) -> EventLoopFuture<User?> {
-//                // Basic authentication info in the "Authorization" header, is accessible
-//                // via request.auth.basic
-//                guard let basic = request.auth.basic else { return request.success(nil) }
-//
-//                // check if user exists in the database and then verify the entered password
-//                // against the one stored in the database. If it is correct then login in user
-//                return database.getUserWithUsername(basic.username).map { user -> User? in
-//                    // did we find a user
-//                    guard let user = user else { return nil }
-//                    // verify password against password hash stored in database. If valid
-//                    // return the user. HummingbirdAuth provides an implementation of Bcrypt
-//                    if Bcrypt.verify(basic.password, hash: user.passwordHash) {
-//                        return user
-//                    }
-//                    return nil
-//                }
-//                // hop back to request eventloop
-//                .hop(to: request.eventLoop)
-//            }
-//        }
         
+        configure(app)
+    }
+}
+
+/*
+@main
+struct PRDStarter: AsyncParsableCommand {
+    @Option(name: .shortAndLong)
+    var hostname: String = "127.0.0.1"
+
+    @Option(name: .shortAndLong)
+    var port: Int = 8070
+
+    mutating func run() async throws {
+        print("Hello, world!")
+        let app = HBApplication(configuration: .init(address: .hostname(hostname, port: port)))
+        
+        app.middleware.add(HBLogRequestsMiddleware(.debug))
+        app.decoder = JSONDecoder()
+        
+        configure(app)
+        
+        try app.start()
+        app.wait()
+    }
+ }
+*/
+
+
+extension PRDStarter {
+    
+    func configure(_ app: HBApplication) {
         app.router
             .post("/submission") { request -> HBResponse in
             guard let foo = try? request.decode(as: FormData.self) else {
@@ -73,7 +71,7 @@ struct MyHandler: HBLambda {
         
         
         app.router.get("form") { request -> HBResponse in
-            return HBResponse(status: .ok, headers: .init([("contentType", "application/html")]), body: .data("""
+            return HBResponse(status: .ok, headers: .init([("contentType", "text/plain"),("contentType", "application/html")]), body: .data("""
 <!doctype html>
 <html lang="en">
 
@@ -92,11 +90,14 @@ struct MyHandler: HBLambda {
 </head>
 
 <body>
+
+
+
   <div class="container">
-    <div class="row mt-5">
+    <div class="row mt-3">
       <div class="col-md-8 offset-md-2">
         <h3 class="text-center">Software Feature Requirement Form</h3>
-        <form id="featureForm" >
+<xform id="featureForm" >
   
           <div class="mb-5">
             <label for="title" class="form-label ">Feature Title*</label>
@@ -106,8 +107,45 @@ struct MyHandler: HBLambda {
           <div class="mb-5">
             <label for="description" class="form-label">Feature Overview*</label>
             <textarea class="form-control control" id="description" rows="3"
-                    placeholder="Enter feature description" required></textarea>
+                    placeholder="Description of what you hope to achieve in this work and any background information that will
+help inform the team." required></textarea>
           </div>
+          <div class="mb-5">
+            <label for="strategicAlignment" class="form-label">Strategic Alignment*</label>
+            <textarea class="form-control control" id="strategicAlignment" rows="6"
+                    placeholder="Explanation of how this new customer experience supports business and product goals" required></textarea>
+          </div>
+
+          <div class="mb-5">
+            <label for="successMetrics" class="form-label">Success Metrics*</label>
+            <textarea class="form-control control" id="successMetrics" rows="6"
+                    placeholder="Explanation of how this new customer experience supports business and product goals" required></textarea>
+          </div>
+
+
+          <div class="mb-5">
+            <label for="userStories" class="form-label">User Stories</label>
+            <textarea class="form-control control" id="userStories" rows="6"
+                    placeholder="List requirements in user story format. Please make sure to have some high level requirements
+documented." ></textarea>
+          </div>
+
+<div class="mb-5">
+  <h3 class="text-center mt-4">User Stories</h3>
+  <div class="row justify-content-center mt-4">
+      <form id="list-form">
+        <div class="form-group input-group">
+            <input type="text" class="form-control" id="list-item-input" placeholder="Add User Story" aria-describedby="button-addon2" >
+            <button type="button" class="btn btn-primary" id="button-addon2">Add Item</button>
+        </div>
+      </form>
+  </div>
+
+  <div class="row justify-content-center mt-4">
+    <ul id="list" class="list-group userStoryList"></ul>
+  </div>
+</div>
+
           <div class="mb-5">
             <label for="acceptanceCriteria" class="form-label">Acceptance Criteria*</label>
             <textarea class="form-control control" id="acceptanceCriteria" rows="6"
@@ -139,14 +177,22 @@ struct MyHandler: HBLambda {
             <input type="text" class="form-control" id="datepicker" placeholder="Choose date">
         </div>
 
-          <div class="mb-5">
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </div>
-        </form>
+        <div class="spinner-border mb-5" style="width: 6rem; height: 6rem;" role="status" >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-primary featureButton">Submit</button>
+            <button type="button" class="btn btn-outline-danger featureButtonReset">Reset</button>
+        </div>
+
+
+<div class="mb-5" > </div>
+
+        </xform>
       </div>
     </div>
   </div>
-
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -154,6 +200,19 @@ struct MyHandler: HBLambda {
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+
+<div class="toast position-fixed bottom-0 end-0 p-3 m-5" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="toast-header">
+    <strong class="me-auto">Saved!!</strong>
+    <small class="text-muted">now</small>
+    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body">
+        PRD created <span class="prdtitle" ></span> <br/>
+        <span class="prdlink" ></span>
+  </div>
+</div>
 
 </body>
 
@@ -164,39 +223,82 @@ $(document).ready(function() {
             calendarWeeks: true,
             autoclose: true
         });
+
+    $(".spinner-border").hide()
+    $(".toast").hide()
+
+    $('#list-form').on('submit', function(e) {
+      e.preventDefault();
+
+      const listItem = $('#list-item-input').val().trim();
+
+      if (listItem) {
+
+      $('#list').append(`
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="userStoryListItem" >${listItem}</span>
+          <button class="btn btn-outline-danger btn-sm list-group-item-delete">
+            <i class="bi-trash"></i>
+          </button>
+        </li>
+      `);
+        $('#list-item-input').val('');
+      }
+    });
+
+    $('#list').on('click', '.list-group-item-delete', function() {
+      $(this).parent().remove();
+    });
 });
 
- $('#featureForm').on('submit', function(event) {
+$('.featureButtonReset').on('click', function(event) {
+    $(".control").each ( function(i, e) {
+        $(e).val('');
+    });
+});
+
+$('.featureButton').on('click', function(event) {
       event.preventDefault(); // prevent the form from submitting normally
 
       var formArray = $('#featureForm').serializeArray();
       var formJson = {};
      
-        console.log(formArray);
 
       $.each(formArray, function(i, item) {
         formJson[item.name] = item.value;
       });
-    formJson["hi"] = "test";
         
     $(".control").each ( function(i, e) {
-        console.log($(e))
-        console.log($(e).attr("id"))
+//        console.log($(e))
+//        console.log($(e).attr("id"))
         formJson[ $(e).attr("id") ] = $(e).val()
     });
 
+    formJson[ "userStoryList" ] = ""
+    $(".userStoryListItem").each ( function(i, e) {
+        formJson[ "userStoryList" ] += $(e).text() + "\\n"
+    });
+
+        console.log("Starting load");
+
+      $(".spinner-border").show()
       $.ajax({
         type: 'POST',
-        url: '/submission', // replace with your actual submission URL
+        url: 'submission', // replace with your actual submission URL
         data: JSON.stringify(formJson),
         contentType: 'application/json',
         success: function(response) {
-          // handle success
-          console.log(response);
+            // handle success
+            console.log(response);
+            $(".spinner-border").hide()
+            $(".prdtitle").text("response.data.title")
+            $(".prdlink").html('<a href="cnn.com">cnn.com</a>')
+            $(".toast").show()
         },
         error: function(error) {
           // handle error
           console.log(error);
+          $(".spinner-border").hide()
         }
       });
     });
@@ -205,9 +307,7 @@ $(document).ready(function() {
 </html>
 """))
         }
-        
-//        try app.start()
-//        app.wait()
+
 //        
     }
 }
