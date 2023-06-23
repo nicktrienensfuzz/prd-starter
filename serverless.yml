@@ -1,4 +1,4 @@
-service: PRDStarter
+service: PRDStarterx86
 
 frameworkVersion: '3'
 useDotenv: true
