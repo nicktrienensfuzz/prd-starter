@@ -65,13 +65,13 @@ extension PRDStarter {
             }
             print(foo)
             return try HBResponse(status: .ok,
-                                  headers: .init([("contentType", "application/json")]),
+                                  headers: .init([("content-Type", "application/json")]),
                                   body: .data( foo.toString()))
         }
         
         
         app.router.get("form") { request -> HBResponse in
-            return HBResponse(status: .ok, headers: .init([("contentType", "text/plain"),("contentType", "application/html")]), body: .data("""
+            return HBResponse(status: .ok, headers: .init([("content-Type", "application/html")]), body: .data("""
 <!doctype html>
 <html lang="en">
 
