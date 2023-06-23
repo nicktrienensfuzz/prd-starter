@@ -1,6 +1,6 @@
-FROM swiftlang/swift:nightly-5.8-amazonlinux2
-
- RUN yum -y install \
+# FROM swiftlang/swift:nightly-5.8-amazonlinux2
+FROM swift:5.8-amazonlinux2
+RUN yum -y install \
      git \
      libuuid-devel \
      libicu-devel \
