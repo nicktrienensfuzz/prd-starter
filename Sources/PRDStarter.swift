@@ -18,7 +18,7 @@ import AWSLambdaRuntimeCore
 @main
 struct PRDStarter: HBLambda {
     // define input and output
-    typealias Event = APIGatewayRequest
+    typealias Event = APIGatewayV2Request
     typealias Output = APIGatewayResponse
 
     init(_ app: HBApplication) {
